@@ -1,0 +1,24 @@
+# .air.toml configuration for hot reloading with Air
+
+# Root directory for the project (by default, it’s the directory where `.air.toml` is located)
+root = "."
+
+# Directory for temporary files created by Air
+tmp_dir = "tmp"
+
+# Main Go file to run (specify your main file here)
+cmd = "go run main.go"
+
+# Watcher settings
+[watcher]
+# Directories/files to watch for changes
+include = ["."]
+# Exclude certain directories
+exclude = ["vendor", ".git", "tmp"]
+
+# Build settings
+[build]
+# Directory to place the compiled binary
+bin = "tmp/main"
+# Command to build your Go application
+cmd = "go build -o tmp/main ."
