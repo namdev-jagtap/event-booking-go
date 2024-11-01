@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"event-booking/models"
+	"event-booking/utils"
 )
 
 var bookingCollection *mongo.Collection
@@ -24,9 +25,9 @@ func SetBookingCollection(client *mongo.Client) {
 
 // BookEvent creates a new booking for an event
 func BookEvent(c *gin.Context) {
-	var booking models.Booking
-	if err := c.ShouldBindJSON(&booking); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+	booking, err := utils.RetrieveValidatedData[models.Booking](c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -36,7 +37,7 @@ func BookEvent(c *gin.Context) {
 	defer cancel()
 
 	var event models.Event
-	err := eventCollection.FindOne(ctx, bson.M{"_id": eventID}).Decode(&event)
+	err = eventCollection.FindOne(ctx, bson.M{"_id": eventID}).Decode(&event)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Event not found"})
 		return
